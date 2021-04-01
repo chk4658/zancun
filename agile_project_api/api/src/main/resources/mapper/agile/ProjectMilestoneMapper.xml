@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectMilestoneDao">
+
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.ProjectMilestone">
+        <id column="id" property="id"/>
+        <id column="REVIEW_PROJECT_ROLE_ID" property="reviewProjectRoleId"/>
+        <id column="CONFIRM_PROJECT_ROLE_ID" property="confirmProjectRoleId"/>
+        <collection property="taskList" ofType="com.touchspring.ailge.entity.agile.Task" column="id" select="com.touchspring.ailge.dao.agile.TaskDao.findParentListByProjectMilestoneId"/>
+        <collection property="reviewProjectRole" ofType="com.touchspring.ailge.entity.agile.ProjectRole" column="REVIEW_PROJECT_ROLE_ID" select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="confirmProjectRole" ofType="com.touchspring.ailge.entity.agile.ProjectRole" column="CONFIRM_PROJECT_ROLE_ID" select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO" type="com.touchspring.ailge.entity.agile.ProjectMilestone">
+        <id column="id" property="id"/>
+        <id column="REVIEW_PROJECT_ROLE_ID" property="reviewProjectRoleId"/>
+        <id column="CONFIRM_PROJECT_ROLE_ID" property="confirmProjectRoleId"/>
+        <collection property="reviewProjectRole" ofType="com.touchspring.ailge.entity.agile.ProjectRole" column="REVIEW_PROJECT_ROLE_ID" select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="confirmProjectRole" ofType="com.touchspring.ailge.entity.agile.ProjectRole" column="CONFIRM_PROJECT_ROLE_ID" select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO2" type="com.touchspring.ailge.entity.agile.ProjectMilestone">
+        <id column="id" property="id"/>
+        <collection property="taskList" ofType="com.touchspring.ailge.entity.agile.Task" column="id" select="com.touchspring.ailge.dao.agile.TaskDao.findEnableParentListByProjectMilestoneId"/>
+    </resultMap>
+
+    <update id="updateByRoleId">
+        update PROJECT_MILESTONE
+        <set>
+            REVIEW_PROJECT_ROLE_ID = #{reviewProjectRoleId,jdbcType=VARCHAR},
+            CONFIRM_PROJECT_ROLE_ID = #{confirmProjectRoleId,jdbcType=VARCHAR},
+        </set>
+        where ID=#{id}
+    </update>
+
+    <update id="updateEstEndTimeAndStatus">
+        update PROJECT_MILESTONE
+        <set>
+            EST_END_TIME = #{estEndTime,jdbcType=DATE},
+            STATUS = #{status,jdbcType=VARCHAR},
+        </set>
+        where ID=#{id}
+    </update>
+
+    <select id="findAllByProjectId" resultMap="BaseResultMap">
+        select * from PROJECT_MILESTONE
+        where IS_DELETE = 0 and PROJECT_ID = #{projectId}
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by sort
+    </select>
+
+    <select id="findById" resultMap="BaseResultMapDTO">
+        select * from PROJECT_MILESTONE
+        where IS_DELETE = 0 and id = #{id}
+    </select>
+
+    <select id="getMaxStatusByProjectIdAndEnable" resultType="java.lang.String">
+        SELECT MAX(STATUS)
+        FROM PROJECT_MILESTONE
+        WHERE PROJECT_ID = #{projectId} and ENABLED = #{enabled} and IS_DELETE = 0
+    </select>
+
+    <select id="findContainsTaskById" resultMap="BaseResultMapDTO2">
+        select * from PROJECT_MILESTONE
+        where IS_DELETE = 0 and id = #{id}
+    </select>
+
+    <select id="getMaxEstEndTimeByProjectIdAndEnable" resultType="java.time.LocalDateTime">
+        SELECT MAX(EST_END_TIME)
+        FROM PROJECT_MILESTONE
+        WHERE PROJECT_ID = #{projectId} and ENABLED = #{enabled} and IS_DELETE = 0
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMapDTO">
+        select * from PROJECT_MILESTONE
+        where IS_DELETE = 0 and ENABLED = 1
+    </select>
+
+</mapper>

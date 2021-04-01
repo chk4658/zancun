@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectRoleDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.ProjectRole">
+        <id column="id" property="id"/>
+        <result column="ROLE_NAME" property="roleName"/>
+        <result column="ROLE_DESCRIPTION" property="roleDescription"/>
+        <result column="PROJECT_ID" property="projectId"/>
+        <result column="DUTY" property="duty"/>
+        <result column="TASK_EQUIVALENT" property="taskEquivalent"/>
+        <collection property="projectRoleUsers" ofType="com.touchspring.ailge.entity.sys.SysUser" select = "com.touchspring.ailge.dao.agile.ProjectRoleUserDao.findListByProjectRoleId" column="id"/>
+
+
+    </resultMap>
+
+
+    <select id="findListPageFilter" resultMap="BaseResultMap">
+        select * from PROJECT_ROLE where is_delete = 0 AND PROJECT_ID = #{projectRole.projectId}
+        <if test="roleNames.length!=0">
+            AND ROLE_NAME in
+            <foreach collection="roleNames" item="role" open="(" close=")" separator=",">
+                #{role}
+            </foreach>
+        </if>
+        <if test="userNames.length!=0">
+            AND ID in
+            <foreach collection="userNames" item="prId" open="(" close=")" separator=",">
+                #{prId}
+            </foreach>
+        </if>
+        ORDER BY CREATE_AT, ID
+    </select>
+
+</mapper>

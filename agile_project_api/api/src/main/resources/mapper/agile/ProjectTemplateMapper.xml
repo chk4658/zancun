@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectTemplateDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.ProjectTemplate">
+        <result column="PROJECT_TEMPLATE_TYPE_ID" property="projectTemplateTypeId"/>
+        <collection property="projectTemplateType" ofType="com.touchspring.ailge.entity.agile.ProjectTemplateType"
+                    select="com.touchspring.ailge.dao.agile.ProjectTemplateTypeDao.selectById" column="PROJECT_TEMPLATE_TYPE_ID"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap1" type="com.touchspring.ailge.entity.agile.ProjectTemplate">
+        <id column="id" property="id"/>
+        <result column="PROJECT_TEMPLATE_TYPE_ID" property="projectTemplateTypeId"/>
+        <collection property="projectTemplateType" ofType="com.touchspring.ailge.entity.agile.ProjectTemplateType"
+                    select="com.touchspring.ailge.dao.agile.ProjectTemplateTypeDao.selectById" column="PROJECT_TEMPLATE_TYPE_ID"/>
+        <collection property="projectTemplateMilestones" ofType="com.touchspring.ailge.entity.agile.ProjectTemplateMilestone"
+                    select="com.touchspring.ailge.dao.agile.ProjectTemplateMilestoneDao.findListByProjectTemplateId" column="id"/>
+        <collection property="projectTemplateAttrs" ofType="com.touchspring.ailge.entity.agile.ProjectTemplateAttr"
+                    select="com.touchspring.ailge.dao.agile.ProjectTemplateAttrDao.findListByProjectTemplateId" column="id"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMap2" type="com.touchspring.ailge.entity.agile.ProjectTemplate">
+        <id column="id" property="id"/>
+        <collection property="projectTemplateMilestones" ofType="com.touchspring.ailge.entity.agile.ProjectTemplateMilestone"
+                    select="com.touchspring.ailge.dao.agile.ProjectTemplateMilestoneDao.findListByProjectTemplateIdNotContainsData" column="id"/>
+    </resultMap>
+
+    <select id="findByProjectTemplate" resultMap="BaseResultMap">
+        select pt.*
+        from PROJECT_TEMPLATE pt
+        left join PROJECT_TEMPLATE_TYPE ptt on pt.PROJECT_TEMPLATE_TYPE_ID = ptt.id
+        where pt.IS_DELETE = 0 and ptt.IS_DELETE = 0
+        <if test="projectTemplate != null and projectTemplate.projectTemplateTypeId != null and projectTemplate.projectTemplateTypeId != ''">
+            and pt.PROJECT_TEMPLATE_TYPE_ID = #{projectTemplate.projectTemplateTypeId}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.enabled != null">
+            and pt.ENABLED = #{projectTemplate.enabled}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.id != null and projectTemplate.id != ''">
+            and pt.id = #{projectTemplate.id}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.name != null and projectTemplate.name != ''">
+            and UPPER(pt.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${projectTemplate.name}%')),'%')
+        </if>
+        order by pt.CREATE_AT
+    </select>
+
+    <select id="findByProjectTemplateContainsAttr" resultMap="BaseResultMap1">
+        select pt.*
+        from PROJECT_TEMPLATE pt
+        left join PROJECT_TEMPLATE_TYPE ptt on pt.PROJECT_TEMPLATE_TYPE_ID = ptt.id
+        where pt.IS_DELETE = 0 and ptt.IS_DELETE = 0
+        <if test="projectTemplate != null and projectTemplate.projectTemplateTypeId != null and projectTemplate.projectTemplateTypeId != ''">
+            and pt.PROJECT_TEMPLATE_TYPE_ID = #{projectTemplate.projectTemplateTypeId}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.enabled != null">
+            and pt.ENABLED = #{projectTemplate.enabled}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.id != null and projectTemplate.id != ''">
+            and pt.id = #{projectTemplate.id}
+        </if>
+        <if test="projectTemplate != null and projectTemplate.name != null and projectTemplate.name != ''">
+            and UPPER(pt.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${projectTemplate.name}%')),'%')
+        </if>
+        order by pt.CREATE_AT
+    </select>
+
+    <select id="findAllByProjectTemplateId" resultMap="BaseResultMap2">
+        select *
+        from PROJECT_TEMPLATE
+        where IS_DELETE = 0
+        and id = #{projectTemplateId}
+    </select>
+
+</mapper>

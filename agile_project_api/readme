@@ -1,0 +1,2 @@
+##手动导入oracle-jar
+mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc8 -Dversion=12.2.0.1 -Dpackaging=jar -Dfile=G:\touchspring\project\git\agileproject\agile_project_api\ojdbc8.jar

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectIssueHistoryDao">
+
+    <resultMap id="ProjectIssueHistoryMap" type="com.touchspring.ailge.entity.agile.ProjectIssueHistory">
+        <association property="project" column="PROJECT_ID"
+                     select="com.touchspring.ailge.dao.agile.ProjectDao.selectById">
+        </association>
+        <association property="projectMilestone" column="PROJECT_MILESTONE_ID"
+                     select="com.touchspring.ailge.dao.agile.ProjectMilestoneDao.selectById">
+        </association>
+        <association property="createUser" column="CREATE_USER_ID"
+                     select="com.touchspring.ailge.dao.sys.SysUserDao.selectById">
+        </association>
+        <association property="createUserDepartment" column="CREATE_USER_DEPARTMENT_ID"
+                     select="com.touchspring.ailge.dao.sys.SysDepartmentDao.selectById">
+        </association>
+
+        <association property="updateUser" column="UPDATE_USER_ID"
+                     select="com.touchspring.ailge.dao.sys.SysUserDao.selectById">
+        </association>
+    </resultMap>
+
+
+    <select id="findListByProjectIssueId" resultMap="ProjectIssueHistoryMap">
+        select * from PROJECT_ISSUE_HISTORY where is_delete = 0  and PROJECT_ISSUE_ID = #{projectIssueId} order by UPDATE_AT ASC
+    </select>
+
+</mapper>

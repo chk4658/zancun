@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.sys.SysCompanyDao">
+
+	<select id="findByFullName" resultType="com.touchspring.ailge.entity.sys.SysCompany">
+--         SELECT c.* FROM SYS_COMPANY c
+--         LEFT JOIN SYS_DEPARTMENT d ON c.ID=d.COMPANY_ID
+--         WHERE (UPPER(c.FULL_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%') or UPPER(d.FULL_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%'))
+--         and c.IS_DELETE = 0 and d.IS_DELETE = 0
+--         order by c.CREATE_AT
+        SELECT * FROM
+	(
+	SELECT
+		c.*
+	FROM
+		SYS_COMPANY c
+		LEFT JOIN SYS_DEPARTMENT d ON c.ID = d.COMPANY_ID
+	WHERE
+		( UPPER( c.FULL_NAME ) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%') OR UPPER( d.FULL_NAME ) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%') )
+		AND c.IS_DELETE = 0
+		AND d.IS_DELETE = 0 UNION
+	SELECT
+		*
+	FROM
+		SYS_COMPANY
+	WHERE
+		upper (FULL_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%')
+		AND IS_DELETE = 0
+	) ORDER BY CREATE_AT
+    </select>
+
+</mapper>

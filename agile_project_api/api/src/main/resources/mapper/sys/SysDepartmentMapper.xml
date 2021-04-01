@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.sys.SysDepartmentDao">
+
+    <select id="findByCompanyId" resultType="com.touchspring.ailge.entity.sys.SysDepartment">
+        select * from sys_department where company_id = #{companyId} and is_delete = 0
+        order by CREATE_AT
+    </select>
+
+    <select id="findByFullName" resultType="com.touchspring.ailge.entity.sys.SysDepartment">
+        select * from sys_department where full_name like '%${fullName}%' and is_delete = 0
+        order by CREATE_AT
+    </select>
+
+    <select id="findByCompanyIdAndFullName" resultType="com.touchspring.ailge.entity.sys.SysDepartment">
+        select * from sys_department where company_id = #{companyId}
+        and (UPPER(full_name) LIKE CONCAT(CONCAT('%',UPPER('%${fullName}%')),'%'))
+        and is_delete = 0
+        order by CREATE_AT
+    </select>
+</mapper>

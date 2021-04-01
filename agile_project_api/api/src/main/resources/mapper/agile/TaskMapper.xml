@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.TaskDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="children" column="id" ofType="com.touchspring.ailge.entity.agile.Task"
+                    select="com.touchspring.ailge.dao.agile.TaskDao.findChildListByParentId"/>
+        <collection property="taskDataList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskData"
+                    select="com.touchspring.ailge.dao.agile.TaskDataDao.findByTaskId"/>
+        <collection property="taskDeliveryList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskDelivery"
+                    select="com.touchspring.ailge.dao.agile.TaskDeliveryDao.getDeliveryByTaskId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <result column="REVIEW_PROJECT_ROLE_ID" property="reviewProjectRoleId"/>
+        <result column="CONFIRM_PROJECT_ROLE_ID" property="confirmProjectRoleId"/>
+        <collection property="taskDataList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskData"
+                    select="com.touchspring.ailge.dao.agile.TaskDataDao.findByTaskId"/>
+        <collection property="reviewUser" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="confirmUser" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="reviewProjectRole" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="confirmProjectRole" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="taskDeliveryList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskDelivery"
+                    select="com.touchspring.ailge.dao.agile.TaskDeliveryDao.getDeliveryByTaskId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO1" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="children" column="id" ofType="com.touchspring.ailge.entity.agile.Task"
+                    select="com.touchspring.ailge.dao.agile.TaskDao.findEnableChildListByParentId"/>
+        <collection property="taskDataList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskData"
+                    select="com.touchspring.ailge.dao.agile.TaskDataDao.findByTaskId"/>
+        <collection property="taskDeliveryList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskDelivery"
+                    select="com.touchspring.ailge.dao.agile.TaskDeliveryDao.getDeliveryByTaskId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO2" type="com.touchspring.ailge.entity.agile.Task">
+        <result column="REVIEW_PROJECT_ROLE_ID" property="reviewProjectRoleId"/>
+        <result column="CONFIRM_PROJECT_ROLE_ID" property="confirmProjectRoleId"/>
+        <collection property="reviewUser" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="confirmUser" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="reviewProjectRole" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="confirmProjectRole" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO3" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="reviewUser" column="REVIEW_SYS_USER_ID" ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.selectById"/>
+        <collection property="confirmUser" column="CONFIRM_SYS_USER_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.selectById"/>
+        <collection property="taskDeliveryList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskDelivery"
+                    select="com.touchspring.ailge.dao.agile.TaskDeliveryDao.getDeliveryByTaskId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO4" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="children" column="id" ofType="com.touchspring.ailge.entity.agile.Task"
+                    select="com.touchspring.ailge.dao.agile.TaskDao.findEnableChildListByParentId"/>
+        <collection property="taskDataList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskData"
+                    select="com.touchspring.ailge.dao.agile.TaskDataDao.findByTaskId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO5" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="reviewUser" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="confirmUser" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO6" type="com.touchspring.ailge.entity.agile.Task">
+        <id column="id" property="id"/>
+        <collection property="reviewUser" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="confirmUser" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.findByProjectRoleId"/>
+        <collection property="reviewProjectRole" column="REVIEW_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="confirmProjectRole" column="CONFIRM_PROJECT_ROLE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectRole"
+                    select="com.touchspring.ailge.dao.agile.ProjectRoleDao.selectById"/>
+        <collection property="taskDataList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskData"
+                    select="com.touchspring.ailge.dao.agile.TaskDataDao.findByTaskId"/>
+        <collection property="projectMilestone" column="MILESTONE_ID"
+                    ofType="com.touchspring.ailge.entity.agile.ProjectMilestone"
+                    select="com.touchspring.ailge.dao.agile.ProjectMilestoneDao.selectById"/>
+        <collection property="project" column="PROJECT_ID"
+                    ofType="com.touchspring.ailge.entity.agile.Project"
+                    select="com.touchspring.ailge.dao.agile.ProjectDao.selectById"/>
+        <collection property="taskDeliveryList" column="id" ofType="com.touchspring.ailge.entity.agile.TaskDelivery"
+                    select="com.touchspring.ailge.dao.agile.TaskDeliveryDao.getDeliveryByTaskId"/>
+    </resultMap>
+
+    <select id="getMaxDateStatusByMilestoneIdAndEnable" resultType="java.lang.String">
+        SELECT MAX(DATE_STATUS)
+        FROM TASK
+        WHERE MILESTONE_ID = #{milestoneId} and ENABLED = #{enabled} and IS_DELETE = 0 and ST_MARK = 0
+    </select>
+
+    <select id="findParentListByProjectMilestoneId" resultMap="BaseResultMap">
+        select *
+        from TASK
+        where is_delete = 0
+        and PARENT_ID IS NULL
+        and MILESTONE_ID = #{projectMilestoneId}
+        order by sort
+    </select>
+
+    <select id="findChildListByParentId" resultMap="BaseResultMap">
+        select *
+        from TASK
+        where is_delete = 0
+        and PARENT_ID = #{parentId}
+        order by sort
+    </select>
+
+    <select id="findAllById" resultMap="BaseResultMapDTO">
+        select *
+        from TASK
+        where is_delete = 0 and ENABLED = 1 and ST_MARK = 0
+        and id = #{id}
+    </select>
+
+    <select id="findContainsChildListById" resultMap="BaseResultMapDTO4">
+        select *
+        from TASK
+        where is_delete = 0
+        and id = #{id}
+    </select>
+
+    <select id="findEnableParentListByProjectMilestoneId" resultMap="BaseResultMapDTO4">
+        select *
+        from TASK
+        where is_delete = 0
+        and PARENT_ID IS NULL
+        and MILESTONE_ID = #{projectMilestoneId}
+        and ENABLED = 1 and ST_MARK = 0
+        order by sort
+    </select>
+
+    <select id="findEnableChildListByParentId" resultMap="BaseResultMapDTO4">
+        select *
+        from TASK
+        where is_delete = 0
+        and PARENT_ID = #{parentId}
+        and ENABLED = 1 and ST_MARK = 0
+        order by sort
+    </select>
+
+    <select id="getMaxEstEndTimeByMilestoneIdAndEnable" resultType="java.time.LocalDateTime">
+        SELECT MAX(EST_END_TIME)
+        FROM TASK
+        WHERE MILESTONE_ID = #{milestoneId} AND ENABLED = #{enabled} and IS_DELETE = 0 and ST_MARK = 0
+    </select>
+
+    <select id="getMaxEstEndTimeByParentTaskIdAndEnable" resultType="java.time.LocalDateTime">
+        SELECT MAX(EST_END_TIME)
+        FROM TASK
+        WHERE PARENT_ID = #{parentId} AND ENABLED = #{enabled} and IS_DELETE = 0 and ST_MARK = 0
+    </select>
+
+    <update id="updateByRoleId">
+        update TASK
+        <set>
+            REVIEW_PROJECT_ROLE_ID = #{reviewProjectRoleId,jdbcType=VARCHAR},
+            CONFIRM_PROJECT_ROLE_ID = #{confirmProjectRoleId,jdbcType=VARCHAR},
+        </set>
+        where ID=#{taskId}
+    </update>
+
+    <insert id="insertByBatch" parameterType="java.util.List" useGeneratedKeys="false">
+        INSERT INTO TASK
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            CIRCLE_ID,
+
+            PROJECT_ID,
+
+            MILESTONE_ID,
+
+            SORT,
+
+            NAME,
+
+            OPEN_CONDITIONS,
+
+            OPEN_DESCRIPTION,
+
+            OPEN_STATUS,
+
+            PARENT_ID,
+
+            STATUS,
+
+            TYPE,
+
+            EST_END_TIME,
+
+            ACT_END_TIME,
+
+            IS_REQUIREMENT,
+
+            REVIEW_PROJECT_ROLE_ID,
+
+            CONFIRM_PROJECT_ROLE_ID,
+
+            REFUSE_REASON,
+
+            PASS_REASON,
+
+            ENABLED,
+
+            FORBIDDEN,
+
+            AHEAD_DAY,
+
+            PRIORITY,
+        </trim>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+
+                #{item.circleId},
+
+                #{item.projectId},
+
+                #{item.milestoneId},
+
+                #{item.sort},
+
+                #{item.name},
+
+                #{item.openConditions},
+
+                #{item.openDescription},
+
+                #{item.openStatus},
+
+                #{item.parentId},
+
+                #{item.status},
+
+                #{item.type},
+
+                #{item.estEndTime},
+
+                #{item.actEndTime},
+
+                #{item.isRequirement},
+
+                #{item.reviewProjectRoleId},
+
+                #{item.confirmProjectRoleId},
+
+                #{item.refuseReason},
+
+                #{item.passReason},
+
+                #{item.enabled},
+
+                #{item.forbidden},
+
+                #{item.aheadDay},
+
+                #{item.priority},
+
+            </trim>
+        </foreach>
+    </insert>
+
+    <select id="findAll" resultMap="BaseResultMapDTO">
+        select *
+        from TASK
+        where is_delete = 0 and ENABLED = 1 and ST_MARK = 0
+    </select>
+
+    <select id="findContainsRoleBetweenDate" resultMap="BaseResultMapDTO2">
+        select * from TASK
+        where IS_DELETE = 0 and EST_END_TIME &gt;= #{startDate} and EST_END_TIME &lt;= #{endDate}
+        <if test="allVisibleProjectIds != null">
+            and PROJECT_ID IN
+            <foreach collection="allVisibleProjectIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!--<select id="findTaskStartAt"-->
+
+    <select id="listByReviewSysUserId" resultType="com.touchspring.ailge.entity.agile.Task">
+        SELECT t.*
+        FROM TASK t
+        LEFT JOIN PROJECT_ROLE_USER pru ON pru.PROJECT_ROLE_ID = t.REVIEW_PROJECT_ROLE_ID
+        WHERE pru.IS_DELETE = 0 AND t.IS_DELETE = 0
+        AND TO_CHAR(t.ACT_END_TIME, 'yyyy-mm') = #{month} AND pru.SYS_USER_ID = #{sysUserId}
+    </select>
+
+    <select id="listByConfirmSysUserId" resultType="com.touchspring.ailge.entity.agile.Task">
+        SELECT t.*
+        FROM TASK t
+        LEFT JOIN PROJECT_ROLE_USER pru ON pru.PROJECT_ROLE_ID = t.CONFIRM_PROJECT_ROLE_ID
+        WHERE pru.IS_DELETE = 0 AND t.IS_DELETE = 0
+        AND TO_CHAR(t.ACT_END_TIME, 'yyyy-mm') = #{month} AND pru.SYS_USER_ID = #{sysUserId}
+    </select>
+
+    <select id="findCurUserTemporaryTask" resultMap="BaseResultMapDTO3">
+        SELECT TASK.*, TASK_USER.REVIEW_SYS_USER_ID REVIEW_SYS_USER_ID, TASK_USER.CONFIRM_SYS_USER_ID CONFIRM_SYS_USER_ID
+        FROM TASK
+        LEFT JOIN ( SELECT * FROM TASK_USER WHERE IS_DELETE = 0 ) TASK_USER ON TASK.ID = TASK_USER.TASK_ID
+        WHERE TASK.IS_DELETE = 0 and TASK.IS_TEMPORARY = #{isTemporary}
+        AND (TASK.CREATE_USER_ID = #{userId} OR TASK_USER.REVIEW_SYS_USER_ID = #{userId} OR TASK_USER.CONFIRM_SYS_USER_ID = #{userId})
+    </select>
+
+
+    <select id="findListByProjectIdAndTaskName" resultMap="BaseResultMapDTO2">
+        select * from TASK
+        where IS_DELETE = 0 and PROJECT_ID = #{projectId} and NAME= #{taskName}
+    </select>
+
+    <select id="findExistsUserInTaskIds" resultMap="BaseResultMapDTO5">
+        SELECT TASK.*, TASK.REVIEW_PROJECT_ROLE_ID REVIEW_PROJECT_ROLE_ID, TASK.CONFIRM_PROJECT_ROLE_ID
+        CONFIRM_PROJECT_ROLE_ID
+        FROM TASK
+        RIGHT JOIN PROJECT_ROLE_USER
+        ON TASK.REVIEW_PROJECT_ROLE_ID = PROJECT_ROLE_USER.PROJECT_ROLE_ID OR TASK.CONFIRM_PROJECT_ROLE_ID =
+        PROJECT_ROLE_USER.PROJECT_ROLE_ID
+        WHERE PROJECT_ROLE_USER.IS_DELETE = 0
+        <if test="taskIds != null">
+            AND TASK.ID IN
+            <foreach collection="taskIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findReviewOrConfirmNotCompleteTaskByUserId" resultMap="BaseResultMapDTO6">
+        SELECT TASK.ID, TASK.PROJECT_ID, TASK.MILESTONE_ID, TASK.NAME, TASK.STATUS, TASK.EST_END_TIME, TASK.REVIEW_PROJECT_ROLE_ID REVIEW_PROJECT_ROLE_ID, TASK.CONFIRM_PROJECT_ROLE_ID, TASK.DATE_STATUS
+        FROM TASK
+        RIGHT JOIN PROJECT_ROLE_USER
+        ON TASK.REVIEW_PROJECT_ROLE_ID = PROJECT_ROLE_USER.PROJECT_ROLE_ID OR TASK.CONFIRM_PROJECT_ROLE_ID = PROJECT_ROLE_USER.PROJECT_ROLE_ID
+        WHERE PROJECT_ROLE_USER.IS_DELETE = 0 and TASK.IS_DELETE = 0 and TASK.ENABLED = 1 and TASK.ST_MARK = 0 and PROJECT_ROLE_USER.SYS_USER_ID = #{userId}
+        and TASK.DATE_STATUS is not null and (TASK.DATE_STATUS = 2 or TASK.DATE_STATUS = 4 or TASK.DATE_STATUS = 6)
+        order by TASK.PROJECT_ID, TASK.DATE_STATUS desc, TASK.sort, TASK.ID
+    </select>
+
+    <select id="findListByProjectId" resultMap="BaseResultMapDTO6">
+        select  *  from  TASK  where is_delete = 0 and project_id = #{projectId}
+    </select>
+
+
+</mapper>

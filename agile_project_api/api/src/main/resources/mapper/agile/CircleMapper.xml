@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.CircleDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.Circle">
+        <id column="OWNER_UID" property="ownerUid"/>
+        <collection property="ownerUser" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.selectById" column="OWNER_UID"/>
+    </resultMap>
+
+    <select id="findAllByCircleIdAndSearchName" resultMap="BaseResultMap">
+        select *
+        from CIRCLE
+        where IS_DELETE = 0
+        <if test="parentId != null and parentId != ''">
+            and PARENT_ID = #{parentId}
+        </if>
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+
+    <select id="findAllChildCircleIdAndSearchName" resultType="com.touchspring.ailge.entity.agile.Circle">
+        select ID, PARENT_ID, NAME
+        from CIRCLE
+        where IS_DELETE = 0 and PARENT_ID is not null
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+
+
+    <select id="findByName" resultType="com.touchspring.ailge.entity.agile.Circle">
+        select *
+        from CIRCLE
+        where IS_DELETE = 0
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+
+    <select id="findParentList" resultType="com.touchspring.ailge.entity.agile.Circle">
+        select ID, PARENT_ID, NAME
+        from CIRCLE
+        where IS_DELETE = 0 and PARENT_ID is null
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+
+    <select id="findByCircleIdsAndName" resultType="com.touchspring.ailge.entity.agile.Circle">
+        select *
+        from CIRCLE
+        where IS_DELETE = 0
+        and ID in
+        <foreach collection="circleIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+
+    <select id="getNewCircleNumPerMonth" resultType="com.touchspring.ailge.dto.CircleChartDTO">
+        select count(crt) as num,crt as dateTime from (SELECT to_char(CREATE_AT,'yyyy"-"mm') as crt FROM CIRCLE WHERE IS_DELETE=0) group by crt order by crt
+    </select>
+
+    <select id="getTopTenTaskNumInCircle" resultType="com.touchspring.ailge.dto.CircleChartDTO">
+        SELECT * FROM (SELECT CIRCLE_ID as circleId, COUNT(*) as num FROM TASK WHERE IS_DELETE=0 AND CIRCLE_ID is NOT NULL GROUP BY CIRCLE_ID ORDER BY num desc) WHERE ROWNUM &lt;= 10
+    </select>
+
+    <select id="getTopTenUserNumInCircle" resultType="com.touchspring.ailge.dto.CircleChartDTO">
+        SELECT * FROM (SELECT CIRCLE_ROLE.CIRCLE_ID as circleId, COUNT(DISTINCT CIRCLE_ROLE_USER.SYS_USER_ID) as num
+        FROM CIRCLE_ROLE_USER
+        LEFT JOIN CIRCLE_ROLE ON CIRCLE_ROLE.ID=CIRCLE_ROLE_USER.CIRCLE_ROLE_ID
+        WHERE CIRCLE_ROLE_USER.IS_DELETE=0 AND CIRCLE_ROLE.IS_DELETE=0
+        GROUP BY CIRCLE_ROLE.CIRCLE_ID ORDER BY num desc) WHERE ROWNUM &lt;= 10
+    </select>
+
+    <select id="getNewTaskNumPerDayInCircleIds" resultType="com.touchspring.ailge.dto.CircleChartDTO">
+        SELECT COUNT(crt) as num, crt as dateTime, CIRCLE_ID as circleId
+        FROM (
+            SELECT to_char(CREATE_AT,'yyyy"-"mm"-"dd') as crt, CIRCLE_ID
+            FROM TASK WHERE IS_DELETE=0
+            <if test="circleIds != null">
+                AND CIRCLE_ID IN
+                <foreach collection="circleIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        )
+        WHERE crt &gt;= #{startDate} AND crt &lt;= #{endDate}
+        group by crt,CIRCLE_ID
+        order by crt
+    </select>
+
+</mapper>

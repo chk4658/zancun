@@ -1,0 +1,84 @@
+server:
+  port: 9091
+  tomcat:
+    max-http-header-size: 10240000
+
+
+spring:
+
+  #生产环境
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@10.250.93.30:1521/pmodb2
+    username: pmo
+    password: Aa@123456
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+
+
+  ##AD认证
+  ldap:
+    ##AD服务器IP，默认端口 %H:%i:%s389
+    urls: ldap://10.250.20.1:389
+    ##登录账号
+    username: ssdt_bpm
+    ##密码
+    password: p@ssw0rd001
+    #distinguishedName的部分节点
+    base: DC=SSDTC,DC=com
+
+  ## Redis连接
+  redis:
+    host: 10.250.93.30
+    port: 6379
+#    password: Touchspring1
+    database: 0
+    lettuce:
+      pool:
+        max-idle: 8
+        max-active: 16
+        min-idle: 0
+        max-wait: -1ms
+    timeout: 5000ms
+
+  ## 邮箱
+  mail:
+    host: mail.ssdt.com
+    username: ssdt_itnotice
+    password: Itservice2018
+    port: 25
+    from: ssdt_itnotice@ssdt.com
+    default-encoding: utf-8
+
+## 邮件中，访问的路径前缀
+path:
+  prefix: @path.prefix@
+
+logging:
+  pattern:
+    console: "%d - %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    com.touchspring.idms: DEBUG
+    root: WARN
+  file:
+    path: @system.filePath@/log
+
+system:
+  filePath: @system.filePath@
+
+
+login:
+  type: search_ldap
+
+jodconverter:
+  local:
+    enabled: true
+    ##本地服务地址
+    #    office-home: C:\Program Files (x86)\OpenOffice 4
+    ##服务器服务地址
+    office-home: /opt/openoffice4
+    max-tasks-per-process: 10
+    port-numbers: 8100

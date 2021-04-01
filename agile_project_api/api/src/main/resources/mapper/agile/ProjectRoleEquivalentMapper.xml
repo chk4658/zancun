@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectRoleEquivalentDao">
+
+    <select id="getProjectEquivalentByUserIdAndMonth" resultType="java.lang.Double">
+        SELECT SUM(PRE.VALUE)
+        FROM PROJECT_ROLE_EQUIVALENT pre
+        LEFT JOIN PROJECT_ROLE_USER pru ON pru.PROJECT_ROLE_ID=pre.PROJECT_ROLE_ID
+        WHERE pru.IS_DELETE = 0 AND pre.IS_DELETE = 0
+        AND pru.SYS_USER_ID = #{userId} AND pre.MONTHS = #{month}
+    </select>
+</mapper>

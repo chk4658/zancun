@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.EquivalentDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.Equivalent">
+        <result column="SYS_USER_ID" property="sysUserId"/>
+        <collection property="sysUser" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.findByUserId" column="SYS_USER_ID"/>
+    </resultMap>
+
+    <select id="findList" resultMap="BaseResultMap">
+        select e.*
+        from EQUIVALENT e
+        left JOIN SYS_USER su ON e.SYS_USER_ID = su.ID
+        where e.is_delete = 0 AND su.IS_DELETE = 0
+        <if test="searchName != null and searchName != ''">
+          and UPPER(su.REAL_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        <if test="startDate != null and startDate != ''">
+          and e.MONTHS &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            and e.MONTHS &lt;= #{endDate}
+        </if>
+        ORDER BY e.MONTHS DESC, e.CREATE_AT DESC, e.ID
+    </select>
+</mapper>

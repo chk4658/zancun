@@ -1,0 +1,92 @@
+server:
+  port: 9091
+
+spring:
+  #开发环境
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@192.168.2.153:1521/aeods
+    username: ssdt_agile_project
+    password: ssdt_agile_project
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+
+
+  ##AD认证
+  ldap:
+#    ##AD服务器IP，默认端口389
+#    urls: ldap://10.250.20.1:389
+#    ##登录账号
+#    username: ssdt_bpm
+#    ##密码
+#    password: p@ssw0rd001
+#    #distinguishedName的部分节点
+#    base: DC=SSDTC,DC=com
+    ##AD服务器IP，默认端口389
+    urls: ldap://192.168.2.200:389
+    ##登录账号
+    username: TEST@touch-spring.local
+    ##密码
+    password: Ts123456
+    #distinguishedName的部分节点
+    base: DC=touch-spring,DC=local
+
+  ## Redis连接
+  redis:
+    host: 192.168.2.172
+    port: 6379
+    password: Touchspring1
+    database: 0
+    lettuce:
+      pool:
+        max-idle: 8
+        max-active: 16
+        min-idle: 0
+        max-wait: -1ms
+    timeout: 5000ms
+
+  ## 王静----邮箱测试
+  mail:
+    host: mail.ssdt.com.cn #发送邮件服务器
+    username: ssdt_itnotice #发送邮件的邮箱地址
+    password:  Itservice2018 #客户端授权码，不是邮箱密码，这个在qq邮箱设置里面自动生成的
+    properties.mail.smtp.port: 25 #465或者994
+    from: ssdt_itnotice # 发送邮件的地址，和上面username一致
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: true
+    default-encoding: utf-8
+
+## 邮件中，访问的路径前缀
+path:
+  prefix: @path.prefix@
+
+##配置 已删除/未删除的状态码
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: flag  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      # 1 代表已删除，不配置默认是1，也可修改配置
+      logic-delete-value: 1
+      # 0 代表未删除，不配置默认是0，也可修改配置
+      logic-not-delete-value: 0
+
+logging:
+  pattern:
+    console: "%d - %msg%n"
+  level:
+    com.touchspring.ailge: DEBUG
+    com.baomidou.example.mapper: DEBUG
+    org.springframework.web: DEBUG
+  file:
+    path: @system.filePath@/log
+
+system:
+  filePath: @system.filePath@
+
+login:
+  type: search_sql

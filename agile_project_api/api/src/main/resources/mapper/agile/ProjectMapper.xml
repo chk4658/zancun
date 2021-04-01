@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.Project">
+        <id column="id" property="id"/>
+        <result column="PROJECT_USER_ID" property="projectUserId"/>
+        <collection property="projectUser" column="PROJECT_USER_ID" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.selectById"/>
+        <collection property="stMarkUser" column="UPDATE_USER_ID" ofType="com.touchspring.ailge.entity.sys.SysUser"
+                    select="com.touchspring.ailge.dao.sys.SysUserDao.selectById"/>
+    </resultMap>
+
+    <select id="findCurUserProject" resultMap="BaseResultMap">
+        select p.*
+        from PROJECT p
+        left join PROJECT_ROLE pr on p.ID = pr.PROJECT_ID
+        left join PROJECT_ROLE_USER pru on pr.ID = pru.PROJECT_ROLE_ID
+        where pru.SYS_USER_ID = #{userId} and pru.IS_DELETE = 0 and pr.IS_DELETE = 0 and p.IS_DELETE = 0 and
+        p.IS_DRAFT_BOX = #{isDraftBox} and p.HAS_ONLINE = 1
+        <if test="stMark != null and stMark == 0">
+            and (p.ST_MARK is null or p.ST_MARK = 0)
+        </if>
+        <if test="stMark != null and stMark == 1">
+            and p.ST_MARK = #{stMark}
+        </if>
+        <if test="searchName != null and searchName != ''">
+            and(UPPER(p.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%') OR UPPER(p.KEYWORD) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%'))
+        </if>
+        order by p.CREATE_AT
+    </select>
+
+    <select id="findDepartmentRangeProject" resultMap="BaseResultMap">
+        select p.*
+        from PROJECT p
+        left join PROJECT_DEPARTMENT pd on p.ID = pd.PROJECT_ID
+        left join SYS_USER u on pd.SYS_DEPARTMENT_ID = u.DEPARTMENT_ID
+        where u.ID = #{userId} and u.IS_DELETE = 0 and pd.IS_DELETE = 0 and p.IS_DELETE = 0 and p.IS_DRAFT_BOX =
+        #{isDraftBox} and p.HAS_ONLINE = 1
+        <if test="stMark != null and stMark == 0">
+            and (p.ST_MARK is null or p.ST_MARK = 0)
+        </if>
+        <if test="stMark != null and stMark == 1">
+            and p.ST_MARK = #{stMark}
+        </if>
+        <if test="searchName != null and searchName != ''">
+            and (UPPER(p.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%') OR UPPER(p.KEYWORD) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%'))
+        </if>
+        order by p.CREATE_AT
+    </select>
+
+    <select id="findByProject" resultMap="BaseResultMap">
+        select *
+        from PROJECT
+        where IS_DELETE = 0 and HAS_ONLINE = 1
+        <if test="project != null and project.stMark != null and project.stMark == 0">
+            and (ST_MARK is null or ST_MARK = 0)
+        </if>
+        <if test="project != null and project.stMark != null and project.stMark == 1">
+            and ST_MARK = #{project.stMark}
+        </if>
+        <if test="project != null and project.circleId != null">
+            and CIRCLE_ID = #{project.circleId}
+        </if>
+        <if test="project != null and project.isDraftBox != null">
+            and IS_DRAFT_BOX = #{project.isDraftBox}
+        </if>
+        <if test="project != null and project.name != null and project.name != ''">
+            and (UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%') OR UPPER(KEYWORD) LIKE CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%'))
+        </if>
+        <if test="project != null and project.visibleUserId != null">
+            and VISIBLE_USER_ID = #{project.visibleUserId}
+        </if>
+        order by CREATE_AT
+    </select>
+
+    <select id="findByProjectIdsAndName" resultType="com.touchspring.ailge.entity.agile.Project">
+        select *
+        from PROJECT
+        where IS_DELETE = 0
+        and ID in
+        <foreach collection="projectIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        <if test="searchName != null and searchName != ''">
+           AND (UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%') OR UPPER(KEYWORD) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%'))
+        </if>
+    </select>
+
+
+    <update id="updateEstEndTimeAndStatus">
+        update PROJECT
+        <set>
+            EST_END_TIME = #{estEndTime,jdbcType=DATE},
+            STATUS = #{status,jdbcType=VARCHAR},
+        </set>
+        where ID=#{id}
+    </update>
+
+
+    <select id="findCurUserNotOnlineProject" resultMap="BaseResultMap">
+        <!--SELECT *
+        FROM PROJECT
+        WHERE IS_DELETE = 0 AND IS_DRAFT_BOX = #{isDraftBox} and CREATE_USER_ID = #{userId}
+        AND (HAS_ONLINE is NULL OR  HAS_ONLINE != 1 )
+        <if test="searchName != null and searchName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        ORDER BY CREATE_AT-->
+        select pp.* from (
+            select DISTINCT(p.id),p.name,p.PROJECT_USER_ID,p.HAS_ONLINE,p.CIRCLE_ID,p.CREATE_AT,p.CIRCLE_BELONGS
+            from PROJECT p
+            left join PROJECT_ROLE pr on p.ID = pr.PROJECT_ID
+            left join PROJECT_ROLE_USER pru on pr.ID = pru.PROJECT_ROLE_ID
+            where pru.IS_DELETE = 0 and pr.IS_DELETE = 0 and p.IS_DELETE = 0
+            and (p.HAS_ONLINE is NULL OR p.HAS_ONLINE != 1 ) and p.IS_DRAFT_BOX = #{isDraftBox}
+            and (
+                p.CREATE_USER_ID = #{userId}
+                <if test="roleNames != null">
+                    OR (
+                        pr.ROLE_NAME IN
+                        <foreach collection="roleNames" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        and pru.SYS_USER_ID = #{userId}
+                    )
+                </if>
+            )
+            <if test="searchName != null and searchName != ''">
+                and (UPPER(p.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%') OR UPPER(p.KEYWORD) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%'))
+            </if>
+        ) pp
+        order by pp.CREATE_AT
+    </select>
+
+    <select id="getNewProjectNumPerMonth" resultType="com.touchspring.ailge.dto.ProjectChartDTO">
+        select count(crt) as num,crt as dateTime from (SELECT to_char(CREATE_AT,'yyyy"-"mm') as crt FROM PROJECT WHERE IS_DELETE=0) group by crt order by crt
+    </select>
+
+    <select id="getProjectNumByStatus" resultType="com.touchspring.ailge.dto.ProjectChartDTO">
+      SELECT STATUS as status, COUNT(ID) as num FROM PROJECT WHERE STATUS is NOT NULL AND IS_DELETE = 0 GROUP BY STATUS
+    </select>
+
+    <select id="getTopTenTaskNumInProject" resultType="com.touchspring.ailge.dto.ProjectChartDTO">
+        SELECT * FROM (SELECT PROJECT_ID as projectId, COUNT(*) as num FROM TASK WHERE IS_DELETE=0 AND PROJECT_ID is NOT NULL GROUP BY PROJECT_ID ORDER BY num desc) WHERE ROWNUM &lt;= 10
+    </select>
+
+    <select id="getTopTenUserNumInProject" resultType="com.touchspring.ailge.dto.ProjectChartDTO">
+        SELECT * FROM
+        (
+            SELECT PROJECT_ROLE.PROJECT_ID as projectId, COUNT(DISTINCT PROJECT_ROLE_USER.SYS_USER_ID) as num
+            FROM PROJECT_ROLE_USER
+            LEFT JOIN PROJECT_ROLE ON PROJECT_ROLE.ID=PROJECT_ROLE_USER.PROJECT_ROLE_ID
+            WHERE PROJECT_ROLE_USER.IS_DELETE=0 AND PROJECT_ROLE.IS_DELETE=0
+            GROUP BY PROJECT_ROLE.PROJECT_ID ORDER BY num desc
+        )
+        WHERE ROWNUM &lt;= 10
+    </select>
+
+    <select id="getNewTaskNumPerDayInProjectIds" resultType="com.touchspring.ailge.dto.ProjectChartDTO">
+        SELECT COUNT(crt) as num, crt as dateTime, PROJECT_ID as projectId
+        FROM (
+            SELECT to_char(CREATE_AT,'yyyy"-"mm"-"dd') as crt, PROJECT_ID
+            FROM TASK
+            WHERE IS_DELETE=0
+            <if test="projectIds != null">
+                AND PROJECT_ID IN
+                <foreach collection="projectIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        )
+        WHERE crt &gt;= #{startDate} AND crt &lt;= #{endDate}
+        group by crt,PROJECT_ID
+        order by crt
+    </select>
+
+    <select id="findPageByProjectAndUserId" resultMap="BaseResultMap">
+        select DISTINCT p.*
+        from PROJECT p
+        left join PROJECT_DEPARTMENT pd on p.ID = pd.PROJECT_ID
+        left join SYS_USER u on pd.SYS_DEPARTMENT_ID = u.DEPARTMENT_ID
+        left join PROJECT_ROLE pr on p.ID = pr.PROJECT_ID
+        left join PROJECT_ROLE_USER pru on pr.ID = pru.PROJECT_ROLE_ID
+        where p.IS_DELETE = 0 and p.HAS_ONLINE = 1
+        <if test="project != null and project.stMark != null and project.stMark == 0">
+            and (p.ST_MARK is null or p.ST_MARK = 0)
+        </if>
+        <if test="project != null and project.stMark != null and project.stMark == 1">
+            and p.ST_MARK = #{project.stMark}
+        </if>
+        <if test="project != null and project.name != null and project.name != ''">
+            and (UPPER(p.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%') OR UPPER(p.KEYWORD) LIKE
+            CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%'))
+        </if>
+        <if test="project != null and project.isDraftBox != null">
+            and p.IS_DRAFT_BOX = #{project.isDraftBox}
+        </if>
+        and
+        (p.VISIBLE_USER_ID = 0
+        or (p.VISIBLE_USER_ID = 2 and u.ID = #{userId} and u.IS_DELETE = 0 and pd.IS_DELETE = 0)
+        or (p.VISIBLE_USER_ID = 1 and pru.SYS_USER_ID = #{userId} and pru.IS_DELETE = 0 and pr.IS_DELETE = 0)
+        )
+        order by p.CREATE_AT
+    </select>
+
+    <select id="findPageByProject" resultMap="BaseResultMap">
+        select *
+        from PROJECT
+        where IS_DELETE = 0 and HAS_ONLINE = 1
+        <if test="project != null and project.stMark != null and project.stMark == 0">
+            and (ST_MARK is null or ST_MARK = 0)
+        </if>
+        <if test="project != null and project.stMark != null and project.stMark == 1">
+            and ST_MARK = #{project.stMark}
+        </if>
+        <if test="project != null and project.isDraftBox != null">
+            and IS_DRAFT_BOX = #{project.isDraftBox}
+        </if>
+        <if test="project != null and project.name != null and project.name != ''">
+            and (UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%') OR UPPER(KEYWORD) LIKE
+            CONCAT(CONCAT('%',UPPER('%${project.name}%')),'%'))
+        </if>
+        order by CREATE_AT
+    </select>
+
+</mapper>

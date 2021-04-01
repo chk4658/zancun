@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.sys.SysRoleDao">
+
+    <select id="searchByRoleName" resultType="com.touchspring.ailge.entity.sys.SysRole">
+        select * from SYS_ROLE
+        WHERE IS_DELETE = 0
+        <if test="roleName != null and roleName != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${roleName}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+</mapper>

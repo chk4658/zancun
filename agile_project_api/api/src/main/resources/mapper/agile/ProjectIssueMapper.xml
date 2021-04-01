@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectIssueDao">
+
+    <resultMap id="ProjectIssueMap" type="com.touchspring.ailge.entity.agile.ProjectIssue">
+        <association property="project" column="PROJECT_ID"
+                     select="com.touchspring.ailge.dao.agile.ProjectDao.selectById">
+        </association>
+        <association property="projectMilestone" column="PROJECT_MILESTONE_ID"
+                     select="com.touchspring.ailge.dao.agile.ProjectMilestoneDao.selectById">
+        </association>
+        <association property="createUser" column="CREATE_USER_ID"
+                     select="com.touchspring.ailge.dao.sys.SysUserDao.selectById">
+        </association>
+        <association property="createUserDepartment" column="CREATE_USER_DEPARTMENT_ID"
+                     select="com.touchspring.ailge.dao.sys.SysDepartmentDao.selectById">
+        </association>
+    </resultMap>
+
+
+    <select id="findPageByUserIdAndProjectIssue" resultMap="ProjectIssueMap">
+        select * from PROJECT_ISSUE where is_delete = 0 and (CREATE_USER_ID = #{userId}
+        or ANALYSIS_USER_ID = #{userId} or SHORT_MEASURE_USER_ID = #{userId} or LONG_MEASURE_USER_ID = #{userId})
+        <if test="projectIssue.projectId != null and projectIssue.projectId != ''">
+            and PROJECT_ID = #{projectIssue.projectId}
+        </if>
+    </select>
+
+
+    <select id="findById" resultMap="ProjectIssueMap">
+        select * from PROJECT_ISSUE where is_delete = 0 and id = #{id}
+    </select>
+
+</mapper>

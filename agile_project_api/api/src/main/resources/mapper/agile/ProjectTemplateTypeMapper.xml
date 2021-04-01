@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectTemplateTypeDao">
+
+    <select id="findAllByNameAsc" resultType="com.touchspring.ailge.entity.agile.ProjectTemplateType">
+        select *
+        from PROJECT_TEMPLATE_TYPE
+        where IS_DELETE = 0
+        <if test="name != null and name != ''">
+            and UPPER(NAME) LIKE CONCAT(CONCAT('%',UPPER('%${name}%')),'%')
+        </if>
+        order by CREATE_AT
+    </select>
+</mapper>

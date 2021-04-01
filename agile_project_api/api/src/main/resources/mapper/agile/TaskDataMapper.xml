@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.TaskDataDao">
+
+    <select id="findByTaskId" resultType="com.touchspring.ailge.entity.agile.TaskData">
+        select TASK_DATA.*, PROJECT_ATTR.TYPE attrType
+        from TASK_DATA
+        left join PROJECT_ATTR on PROJECT_ATTR.ID = TASK_DATA.PROJECT_ATTR_ID
+        where TASK_DATA.TASK_ID = #{taskId} and TASK_DATA.IS_DELETE = 0
+    </select>
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.sys.SysUserDao">
+
+    <select id="findByCompanyAndDepartment" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.full_name departmentname FROM sys_user u
+        LEFT JOIN sys_department d ON u.department_id = d.id
+        WHERE u.is_delete = 0 AND d.is_delete = 0
+        <if test="companyId!=null  and companyId!=''">
+            and u.company_id = #{companyId}
+        </if>
+        <if test="departmentId!=null and departmentId!='' ">
+            and u.department_id = #{departmentId}
+        </if>
+        <if test="name!=null and name != ''">
+            and (UPPER(u.account) LIKE CONCAT(CONCAT('%',UPPER('%${name}%')),'%') or UPPER(u.real_name) LIKE CONCAT(CONCAT('%',UPPER('%${name}%')),'%'))
+        </if>
+        <if test="enabled!=null">
+            and u.enabled = #{enabled}
+        </if>
+        order by u.CREATE_AT, u.ID
+    </select>
+
+    <select id="findByCircleRoleId" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.FULL_NAME departmentname
+        FROM SYS_USER u
+        LEFT JOIN CIRCLE_ROLE_USER cru on cru.SYS_USER_ID = u.id
+        LEFT JOIN SYS_DEPARTMENT d on u.DEPARTMENT_ID = d.id
+        where cru.CIRCLE_ROLE_ID = #{circleRoleId} and u.is_delete = 0
+    </select>
+
+    <select id="findByUserIds" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.full_name departmentname FROM sys_user u
+        LEFT JOIN sys_department d ON u.department_id = d.id
+        WHERE u.is_delete = 0 AND d.is_delete = 0
+        and u.id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findByProjectRoleId" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        select *
+        from SYS_USER
+        left join PROJECT_ROLE_USER on PROJECT_ROLE_USER.SYS_USER_ID = SYS_USER.id
+        where PROJECT_ROLE_USER.is_delete = 0 and SYS_USER.is_delete = 0
+        and PROJECT_ROLE_USER.PROJECT_ROLE_ID = #{projectRoleId}
+    </select>
+
+    <select id="findInSqlByUserIds" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.full_name departmentname FROM sys_user u
+        LEFT JOIN sys_department d ON u.department_id = d.id
+        WHERE u.is_delete = 0 AND d.is_delete = 0
+        <if test="str != null">
+            and ${str}
+        </if>
+    </select>
+
+    <select id="findInUserIdsContainsDepartmentName" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.full_name departmentname FROM sys_user u
+        LEFT JOIN sys_department d ON u.department_id = d.id
+        WHERE u.is_delete = 0 AND d.is_delete = 0
+        and u.id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findPageUserByRoleId" resultType="com.touchspring.ailge.entity.sys.SysUser">
+        SELECT u.*, d.full_name departmentname FROM SYS_USER_ROLE sur
+        LEFT JOIN sys_user u ON u.ID = sur.SYS_USER_ID
+        LEFT JOIN sys_department d ON u.department_id = d.id
+        WHERE u.is_delete = 0 AND d.is_delete = 0 and sur.IS_DELETE = 0
+        and sur.SYS_ROLE_ID = #{roleId}
+        <if test="searchName != '' and searchName != null">
+            and UPPER(u.REAL_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+    </select>
+
+</mapper>

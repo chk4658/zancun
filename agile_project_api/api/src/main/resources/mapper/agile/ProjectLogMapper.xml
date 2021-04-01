@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.ProjectLogDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.ProjectLog">
+        <id column="CREATE_USER_ID" property="createUserId"/>
+        <collection property="createSysUser" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.selectById" column="CREATE_USER_ID"/>
+    </resultMap>
+
+    <select id="findByProjectId" resultMap="BaseResultMap">
+        select *
+        from PROJECT_LOG
+        where PROJECT_ID = #{projectId} and IS_DELETE = 0
+        <if test="searchName != null and searchName != ''">
+            and UPPER(CONTENT) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%')
+        </if>
+        order by CREATE_AT desc
+    </select>
+</mapper>

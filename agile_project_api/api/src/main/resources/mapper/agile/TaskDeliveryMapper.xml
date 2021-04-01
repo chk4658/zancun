@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.agile.TaskDeliveryDao">
+
+    <resultMap id="BaseResultMap" type="com.touchspring.ailge.entity.agile.TaskDelivery">
+        <id column="id" property="id"/>
+        <result column="TASK_ID" property="taskId"/>
+        <result column="PROJECT_ID" property="projectId"/>
+        <result column="SUBMIT_USER_ID" property="submitUserId"/>
+        <result column="CONFIRM_USER_ID" property="confirmUserId"/>
+        <collection property="task" ofType="com.touchspring.ailge.entity.agile.Task" select="com.touchspring.ailge.dao.agile.TaskDao.selectById" column="TASK_ID"/>
+        <collection property="project" ofType="com.touchspring.ailge.entity.agile.Project" select="com.touchspring.ailge.dao.agile.ProjectDao.selectById" column="PROJECT_ID"/>
+        <collection property="submitUser" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.selectById" column="SUBMIT_USER_ID"/>
+        <collection property="confirmUser" ofType="com.touchspring.ailge.entity.sys.SysUser" select="com.touchspring.ailge.dao.sys.SysUserDao.selectById" column="CONFIRM_USER_ID"/>
+    </resultMap>
+
+
+
+    <select id="findPageByProjectIdOrDeliveryNameFilter" resultMap="BaseResultMap">
+        select td.*, d.PATH deliveryPath
+        from TASK_DELIVERY td
+        left join TASK t on t.ID = td.TASK_ID
+        left join DELIVERY d on td.DELIVERY_ID = d.ID
+        where td.IS_DELETE = 0 and t.IS_DELETE = 0 and td.PROJECT_ID = #{projectId}
+        <if test="deliveryNames.length != 0">
+            and td.DELIVERY_NAME in
+            <foreach collection="deliveryNames" item="deli" separator="," open="(" close=")">
+                #{deli}
+            </foreach>
+        </if>
+        <if test="searchName != null and searchName != ''">
+            and (UPPER(t.NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%') or UPPER(td.DELIVERY_NAME) LIKE CONCAT(CONCAT('%',UPPER('%${searchName}%')),'%'))
+        </if>
+        order by td.CREATE_AT
+    </select>
+
+    <select id="findByDeliveryId" resultMap="BaseResultMap">
+        SELECT *
+        FROM TASK_DELIVERY
+        WHERE IS_DELETE = 0  AND DELIVERY_ID = #{deliveryId}
+        order by CREATE_AT
+    </select>
+</mapper>

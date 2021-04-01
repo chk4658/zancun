@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.touchspring.ailge.dao.sys.SysDictDataDao">
+
+    <select id="findByDictId" resultType="com.touchspring.ailge.entity.sys.SysDictData">
+        select * from SYS_DICT_DATA where SYS_DICT_ID = #{dictId} and IS_DELETE = 0 order by code
+    </select>
+
+    <select id="findDataByDictName" resultType="com.touchspring.ailge.entity.sys.SysDictData">
+        SELECT * FROM SYS_DICT_DATA T1
+        LEFT JOIN SYS_DICT T2 ON T2.ID = T1.SYS_DICT_ID
+        WHERE T2."NAME" = #{name}
+    </select>
+</mapper>
